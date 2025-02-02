@@ -1,15 +1,14 @@
-version: "3.8"
-
 networks:
   dokploy-network:
     external: true
+  
 
 services:
   minecraft-server:
     image: ${MINECRAFT_SERVER_IMAGE_TAG}
     volumes:
       - ../files/minecraft-server-data:${DATA_PATH}
-      - /dev/null:/plugins  # Prevents plugins from being visible
+      - ../files/minecraft-server-data/plugins:/plugins:ro  # Prevents plugins from being visible
     environment:
       EULA: ${MINECRAFT_SERVER_EULA}
       TYPE: ${MINECRAFT_SERVER_TYPE}
