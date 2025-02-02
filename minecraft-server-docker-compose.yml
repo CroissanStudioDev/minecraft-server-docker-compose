@@ -8,7 +8,7 @@ services:
     image: ${MINECRAFT_SERVER_IMAGE_TAG}
     volumes:
       - ../files/minecraft-server-data:${DATA_PATH}
-      - .plugins:/plugins:ro  # Prevents plugins from being visible
+      - ./plugins:/plugins:ro  # Prevents plugins from being visible
     environment:
       EULA: ${MINECRAFT_SERVER_EULA}
       TYPE: ${MINECRAFT_SERVER_TYPE}
