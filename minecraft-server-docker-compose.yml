@@ -1,3 +1,5 @@
+version: "3.8"
+
 networks:
   dokploy-network:
     external: true
@@ -6,8 +8,8 @@ services:
   minecraft-server:
     image: ${MINECRAFT_SERVER_IMAGE_TAG}
     volumes:
-      - ./minecraft-server-data:${DATA_PATH}
-      - ./plugins:/plugins:ro
+      - ../files/minecraft-server-data:${DATA_PATH}
+      - ../files/plugins:/plugins:ro
     environment:
       EULA: ${MINECRAFT_SERVER_EULA}
       TYPE: ${MINECRAFT_SERVER_TYPE}
@@ -44,8 +46,14 @@ services:
       TZ: ${MINECRAFT_SERVER_SERVER_TIMEZONE}
     networks:
       - dokploy-network
-    ports:
-      - "${MINECRAFT_SERVER_SERVER_PORT}:${MINECRAFT_SERVER_SERVER_PORT}"
+    expose:
+      - "${MINECRAFT_SERVER_SERVER_PORT}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minecraft-server.rule=Host(`${MINECRAFT_SERVER_DOMAIN}`)"
+      - "traefik.http.routers.minecraft-server.entrypoints=websecure"
+      - "traefik.http.routers.minecraft-server.tls.certResolver=letsencrypt"
+      - "traefik.http.services.minecraft-server.loadbalancer.server.port=${MINECRAFT_SERVER_SERVER_PORT}"
     restart: unless-stopped
 
   backups:
@@ -62,8 +70,8 @@ services:
       INITIAL_DELAY: ${MINECRAFT_SERVER_INITIAL_DELAY}
       TZ: ${MINECRAFT_SERVER_SERVER_TIMEZONE}
     volumes:
-    - ./minecraft-server-data:${DATA_PATH}:ro
-    - ./minecraft-server-data-backups:${MINECRAFT_SERVER_BACKUPS_PATH}
+      - ../files/minecraft-server-data:${DATA_PATH}:ro
+      - ../files/minecraft-server-data-backups:${MINECRAFT_SERVER_BACKUPS_PATH}
     networks:
       - dokploy-network
     restart: unless-stopped
