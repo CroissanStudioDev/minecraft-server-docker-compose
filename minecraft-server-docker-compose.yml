@@ -2,6 +2,12 @@ networks:
   dokploy-network:
     external: true
 
+volumes:
+  minecraft-server-data:
+    driver: external
+  minecraft-server-data-backups:
+    driver: external
+
 services:
   minecraft-server:
     image: ${MINECRAFT_SERVER_IMAGE_TAG}
